@@ -1,14 +1,11 @@
--- ╔══════════════════════════════════════════════════════════════╗
--- ║           BOP HUB v9.0 — TOP 1 BLOX FRUITS MOBILE          ║
--- ║     UI PROPIA: BopLib | Morado/Negro | Delta Optimizado     ║
--- ╚══════════════════════════════════════════════════════════════╝
-
--- ══ CARGAR BOPLIB (UI PROPIA) ══
 local BopLib = loadstring(game:HttpGet(
     "https://raw.githubusercontent.com/Bophub-script/BopHub/refs/heads/main/BopLib.lua"
 ))()
 
--- ══ SERVICIOS ══
+if not BopLib then
+    error("[BopHub] ERROR: BopLib no cargo. Verifica la URL de la libreria.")
+end
+
 local Players      = game:GetService("Players")
 local Workspace    = game:GetService("Workspace")
 local UIS          = game:GetService("UserInputService")
@@ -27,7 +24,6 @@ end)
 
 local isMobile = UIS.TouchEnabled and not UIS.KeyboardEnabled
 
--- ══ COMPATIBILIDAD EXECUTOR ══
 if typeof(newcclosure)       ~= "function" then newcclosure       = function(f) return f end end
 if typeof(getnamecallmethod) ~= "function" then getnamecallmethod = function() return nil end end
 if typeof(setreadonly)       ~= "function" then setreadonly       = function() end end
@@ -40,7 +36,6 @@ local IS_DELTA   = (typeof(firesignal)  == "function")
 local HAS_HOOK   = (typeof(hookfunction)== "function")
 local HAS_HIDDEN = (typeof(sethiddenproperty)=="function")
 
--- ══ ESTADO GLOBAL ══
 _G.BOP = {
     AutoFarm=false, AutoBoss=false, AutoQuest=false,
     MobAura=false,  AutoChest=false, AutoRaid=false, AutoBone=false,
@@ -60,12 +55,10 @@ _G.BOP = {
     SpeedValue=20,   AuraRange=15,
 }
 
--- ══ THREADS ══
 local Threads = {}
 local function killThread(n) if Threads[n] then pcall(task.cancel,Threads[n]); Threads[n]=nil end end
 local function newThread(n,fn) killThread(n); Threads[n]=task.spawn(fn) end
 
--- ══ UTILIDADES ══
 local ESPBoxes = {}
 
 local function safeTP(cf)
@@ -140,7 +133,6 @@ end
 
 local function tp(pos) safeTP(CFrame.new(pos)) end
 
--- Anti-Kick
 local function applyAntiKick()
     if not HAS_HOOK then return end
     pcall(function()
@@ -150,29 +142,24 @@ local function applyAntiKick()
         local wrap = (typeof(newcclosure)=="function") and newcclosure or function(f) return f end
         mt.__namecall = wrap(function(self,...)
             local m = (typeof(getnamecallmethod)=="function") and getnamecallmethod()
-            if m=="Kick" then Window:Notify("Anti-Kick 🛡️","Kick bloqueado!"); return end
+            if m=="Kick" then Window:Notify("Anti-Kick","Kick bloqueado!"); return end
             return old(self,...)
         end)
         setreadonly(mt,true)
     end)
 end
 
--- ══ CREAR VENTANA ══
-local Window = BopLib.new("BOP HUB v9 — Top 1 Blox Fruits")
+local Window = BopLib.new("HUB v9 — Top 1 Blox Fruits")
 
 task.spawn(function()
     task.wait(2)
     applyAntiKick()
-    Window:Notify("BOP HUB v9","✅ Cargado correctamente!")
+    Window:Notify("BOP HUB v9","Cargado correctamente!")
 end)
 
--- ╔══════════════════════════════════════════════════════════════╗
--- ║                    TAB 1 — AUTO FARM                        ║
--- ╚══════════════════════════════════════════════════════════════╝
-local Farm = Window:Tab("🌾 Farm")
-
-Farm:Separator("— Farm Principal —")
-
+-- TAB FARM
+local Farm = Window:Tab("Farm")
+Farm:Separator("--- Farm Principal ---")
 Farm:Toggle("Auto Farm Level", false, function(v)
     _G.BOP.AutoFarm = v
     newThread("AutoFarm", function()
@@ -192,7 +179,6 @@ Farm:Toggle("Auto Farm Level", false, function(v)
         end
     end)
 end)
-
 Farm:Toggle("Auto Quest", false, function(v)
     _G.BOP.AutoQuest = v
     newThread("AutoQuest", function()
@@ -209,7 +195,6 @@ Farm:Toggle("Auto Quest", false, function(v)
         end
     end)
 end)
-
 Farm:Toggle("Mob Aura (Mata cercanos)", false, function(v)
     _G.BOP.MobAura = v
     newThread("MobAura", function()
@@ -227,9 +212,7 @@ Farm:Toggle("Mob Aura (Mata cercanos)", false, function(v)
         end
     end)
 end)
-
 Farm:Slider("Aura Range", 5, 100, 15, function(v) _G.BOP.AuraRange=v end)
-
 Farm:Toggle("No Clip", false, function(v)
     _G.BOP.NoClip=v
     newThread("NoClip", function()
@@ -243,8 +226,7 @@ Farm:Toggle("No Clip", false, function(v)
         end
     end)
 end)
-
-Farm:Separator("— Mastery Farm —")
+Farm:Separator("--- Mastery Farm ---")
 Farm:Toggle("Auto Farm Fruit Mastery", false, function(v)
     newThread("FMastery", function()
         while v do
@@ -259,7 +241,6 @@ Farm:Toggle("Auto Farm Fruit Mastery", false, function(v)
         end
     end)
 end)
-
 Farm:Toggle("Auto Farm Sword Mastery", false, function(v)
     newThread("SMastery", function()
         while v do
@@ -274,7 +255,6 @@ Farm:Toggle("Auto Farm Sword Mastery", false, function(v)
         end
     end)
 end)
-
 Farm:Toggle("Auto Farm Gun Mastery", false, function(v)
     newThread("GMastery", function()
         while v do
@@ -289,8 +269,7 @@ Farm:Toggle("Auto Farm Gun Mastery", false, function(v)
         end
     end)
 end)
-
-Farm:Separator("— Bosses & Drops —")
+Farm:Separator("--- Bosses & Drops ---")
 Farm:Toggle("Auto Farm Boss", false, function(v)
     _G.BOP.AutoBoss=v
     newThread("AutoBoss", function()
@@ -306,7 +285,6 @@ Farm:Toggle("Auto Farm Boss", false, function(v)
         end
     end)
 end)
-
 Farm:Toggle("Auto Raid", false, function(v)
     newThread("AutoRaid", function()
         while v do
@@ -321,7 +299,6 @@ Farm:Toggle("Auto Raid", false, function(v)
         end
     end)
 end)
-
 Farm:Toggle("Auto Farm Chest", false, function(v)
     newThread("AutoChest", function()
         while v do
@@ -337,7 +314,6 @@ Farm:Toggle("Auto Farm Chest", false, function(v)
         end
     end)
 end)
-
 Farm:Toggle("Auto Farm Bone", false, function(v)
     newThread("AutoBone", function()
         while v do
@@ -354,12 +330,9 @@ Farm:Toggle("Auto Farm Bone", false, function(v)
     end)
 end)
 
--- ╔══════════════════════════════════════════════════════════════╗
--- ║                    TAB 2 — COMBAT                           ║
--- ╚══════════════════════════════════════════════════════════════╝
-local Combat = Window:Tab("⚔️ Combat")
-
-Combat:Separator("— PVP Core —")
+-- TAB COMBAT
+local Combat = Window:Tab("Combat")
+Combat:Separator("--- PVP Core ---")
 Combat:Toggle("Auto PVP", false, function(v)
     _G.BOP.AutoPVP=v
     newThread("AutoPVP", function()
@@ -378,7 +351,6 @@ Combat:Toggle("Auto PVP", false, function(v)
         end
     end)
 end)
-
 Combat:Toggle("Kill Aura (Players)", false, function(v)
     newThread("KillAura", function()
         while v do
@@ -395,7 +367,6 @@ Combat:Toggle("Kill Aura (Players)", false, function(v)
         end
     end)
 end)
-
 Combat:Toggle("Auto Dodge", false, function(v)
     newThread("AutoDodge", function()
         while v do
@@ -408,7 +379,6 @@ Combat:Toggle("Auto Dodge", false, function(v)
         end
     end)
 end)
-
 Combat:Toggle("No Stun", false, function(v)
     newThread("NoStun", function()
         while v do
@@ -420,8 +390,7 @@ Combat:Toggle("No Stun", false, function(v)
         end
     end)
 end)
-
-Combat:Separator("— Instakill —")
+Combat:Separator("--- Instakill ---")
 Combat:Toggle("Instakill (Mobs)", false, function(v)
     _G.BOP.Instakill=v
     newThread("IKMobs", function()
@@ -439,7 +408,6 @@ Combat:Toggle("Instakill (Mobs)", false, function(v)
         end
     end)
 end)
-
 Combat:Toggle("Instakill (Players)", false, function(v)
     newThread("IKPlayers", function()
         while v do
@@ -455,15 +423,13 @@ Combat:Toggle("Instakill (Players)", false, function(v)
         end
     end)
 end)
-
 Combat:Toggle("God Mode (HP Infinita)", false, function(v)
     _G.BOP.GodMode=v
     newThread("GodMode", function()
         while _G.BOP.GodMode do pcall(function() hum.Health=hum.MaxHealth end); task.wait(0.05) end
     end)
 end)
-
-Combat:Separator("— Skills & Haki —")
+Combat:Separator("--- Skills & Haki ---")
 Combat:Toggle("Auto Buso Haki", false, function(v)
     newThread("AutoBuso", function()
         while v do
@@ -472,7 +438,6 @@ Combat:Toggle("Auto Buso Haki", false, function(v)
         end
     end)
 end)
-
 Combat:Toggle("Auto Ken (Observation)", false, function(v)
     newThread("AutoKen", function()
         while v do
@@ -481,7 +446,6 @@ Combat:Toggle("Auto Ken (Observation)", false, function(v)
         end
     end)
 end)
-
 Combat:Toggle("Auto Skills ZXCV", false, function(v)
     newThread("AutoSkills", function()
         while v do
@@ -493,7 +457,6 @@ Combat:Toggle("Auto Skills ZXCV", false, function(v)
         end
     end)
 end)
-
 Combat:Toggle("Auto Clicker (Touch)", false, function(v)
     newThread("AutoClick", function()
         while v do
@@ -507,12 +470,9 @@ Combat:Toggle("Auto Clicker (Touch)", false, function(v)
     end)
 end)
 
--- ╔══════════════════════════════════════════════════════════════╗
--- ║                  TAB 3 — BOUNTY/MONEY                       ║
--- ╚══════════════════════════════════════════════════════════════╝
-local Bounty = Window:Tab("🎯 Bounty")
-
-Bounty:Separator("— Bounty Farm —")
+-- TAB BOUNTY
+local Bounty = Window:Tab("Bounty")
+Bounty:Separator("--- Bounty Farm ---")
 Bounty:Toggle("Auto Bounty Farm", false, function(v)
     _G.BOP.AutoBounty=v
     newThread("AutoBounty", function()
@@ -531,7 +491,6 @@ Bounty:Toggle("Auto Bounty Farm", false, function(v)
         end
     end)
 end)
-
 Bounty:Toggle("Bounty Hunter (max bounty)", false, function(v)
     newThread("BHunter", function()
         while v do
@@ -546,18 +505,16 @@ Bounty:Toggle("Bounty Hunter (max bounty)", false, function(v)
                 end
                 if tgt and tgt.Character:FindFirstChild("HumanoidRootPart") then
                     safeTP(tgt.Character.HumanoidRootPart.CFrame*CFrame.new(0,0,-3)); killPlayer(tgt)
-                    Window:Notify("Bounty Hunter","Eliminado: "..tgt.Name.." 💰"..mx)
+                    Window:Notify("Bounty Hunter","Eliminado: "..tgt.Name.." "..mx)
                 end
             end)
             task.wait(0.5)
         end
     end)
 end)
-
-Bounty:Slider("Bounty Mínimo (M)", 0, 500, 0, function(v) _G.BOP.BountyMin=v*1000000 end)
-Bounty:Slider("Bounty Máximo (M)", 0, 500, 300, function(v) _G.BOP.BountyMax=v*1000000 end)
-
-Bounty:Separator("— Money & Fragments —")
+Bounty:Slider("Bounty Minimo (M)", 0, 500, 0, function(v) _G.BOP.BountyMin=v*1000000 end)
+Bounty:Slider("Bounty Maximo (M)", 0, 500, 300, function(v) _G.BOP.BountyMax=v*1000000 end)
+Bounty:Separator("--- Money & Fragments ---")
 Bounty:Toggle("Auto Money Farm", false, function(v)
     newThread("AutoMoney", function()
         while v do
@@ -577,7 +534,6 @@ Bounty:Toggle("Auto Money Farm", false, function(v)
         end
     end)
 end)
-
 Bounty:Toggle("Auto Fragment Farm", false, function(v)
     newThread("AutoFrag", function()
         while v do
@@ -593,12 +549,9 @@ Bounty:Toggle("Auto Fragment Farm", false, function(v)
     end)
 end)
 
--- ╔══════════════════════════════════════════════════════════════╗
--- ║                   TAB 4 — FRUITS                            ║
--- ╚══════════════════════════════════════════════════════════════╝
-local Fruits = Window:Tab("🍎 Fruits")
-
-Fruits:Separator("— Fruit Finder —")
+-- TAB FRUITS
+local Fruits = Window:Tab("Fruits")
+Fruits:Separator("--- Fruit Finder ---")
 Fruits:Toggle("Fruit Sniper (Auto Grab)", false, function(v)
     newThread("FruitSniper", function()
         while v do
@@ -613,7 +566,6 @@ Fruits:Toggle("Fruit Sniper (Auto Grab)", false, function(v)
         end
     end)
 end)
-
 Fruits:Toggle("Auto Eat Fruit", false, function(v)
     newThread("AutoEat", function()
         while v do
@@ -630,8 +582,7 @@ Fruits:Toggle("Auto Eat Fruit", false, function(v)
         end
     end)
 end)
-
-Fruits:Separator("— Fruit Notifier —")
+Fruits:Separator("--- Fruit Notifier ---")
 Fruits:Toggle("Fruit Notifier ACTIVO", false, function(v)
     local known={}
     newThread("FruitNotifier", function()
@@ -640,7 +591,7 @@ Fruits:Toggle("Fruit Notifier ACTIVO", false, function(v)
                 for _,o in ipairs(Workspace:GetDescendants()) do
                     if o:IsA("BasePart") and (o.Name:find("Fruit") or o.Name:find("Devil") or o.Name:find("_Fruit")) and not known[o] then
                         known[o]=true
-                        Window:Notify("🍎 FRUTA DETECTADA", o.Name.." a "..math.floor((o.Position-hrp.Position).Magnitude).."m")
+                        Window:Notify("FRUTA DETECTADA", o.Name.." a "..math.floor((o.Position-hrp.Position).Magnitude).."m")
                         createESPFor(o, Color3.fromRGB(255,215,0))
                         task.spawn(function() task.wait(30); known[o]=nil end)
                     end
@@ -650,7 +601,6 @@ Fruits:Toggle("Fruit Notifier ACTIVO", false, function(v)
         end
     end)
 end)
-
 Fruits:Toggle("Auto TP a Fruta", false, function(v)
     newThread("AutoTPFruit", function()
         while v do
@@ -665,7 +615,6 @@ Fruits:Toggle("Auto TP a Fruta", false, function(v)
         end
     end)
 end)
-
 Fruits:Toggle("Rain Fruit (Auto Collect)", false, function(v)
     newThread("RainFruit", function()
         while v do
@@ -681,12 +630,9 @@ Fruits:Toggle("Rain Fruit (Auto Collect)", false, function(v)
     end)
 end)
 
--- ╔══════════════════════════════════════════════════════════════╗
--- ║                   TAB 5 — TELEPORT                          ║
--- ╚══════════════════════════════════════════════════════════════╝
-local Teleport = Window:Tab("🗺️ TP")
-
-Teleport:Separator("— First Sea —")
+-- TAB TELEPORT
+local Teleport = Window:Tab("TP")
+Teleport:Separator("--- First Sea ---")
 Teleport:Button("Starter Island",     function() tp(Vector3.new(980,18,-1430))   end)
 Teleport:Button("Marine Starter",     function() tp(Vector3.new(-970,18,2138))   end)
 Teleport:Button("Jungle",             function() tp(Vector3.new(-1500,40,148))   end)
@@ -696,8 +642,7 @@ Teleport:Button("Frozen Village",     function() tp(Vector3.new(1250,9,400))    
 Teleport:Button("Marine Fortress",    function() tp(Vector3.new(-4880,15,520))   end)
 Teleport:Button("Skylands",           function() tp(Vector3.new(-5000,600,-500)) end)
 Teleport:Button("Colosseum",          function() tp(Vector3.new(-1300,9,1700))   end)
-
-Teleport:Separator("— Second Sea —")
+Teleport:Separator("--- Second Sea ---")
 Teleport:Button("Kingdom of Rose",    function() tp(Vector3.new(-200,50,-3100))   end)
 Teleport:Button("Green Zone",         function() tp(Vector3.new(-2082,69,-3584))  end)
 Teleport:Button("Graveyard",          function() tp(Vector3.new(350,14,-3200))    end)
@@ -706,8 +651,7 @@ Teleport:Button("Hot & Cold Island",  function() tp(Vector3.new(-5010,28,-2600))
 Teleport:Button("Cursed Ship",        function() tp(Vector3.new(640,5,-3900))     end)
 Teleport:Button("Ice Castle",         function() tp(Vector3.new(-4040,30,-2700))  end)
 Teleport:Button("Forgotten Island",   function() tp(Vector3.new(-5500,300,-1600)) end)
-
-Teleport:Separator("— Third Sea —")
+Teleport:Separator("--- Third Sea ---")
 Teleport:Button("Port Town",          function() tp(Vector3.new(-4970,24,-7900))  end)
 Teleport:Button("Hydra Island",       function() tp(Vector3.new(-6300,10,-7200))  end)
 Teleport:Button("Great Tree",         function() tp(Vector3.new(5400,60,-7900))   end)
@@ -717,12 +661,9 @@ Teleport:Button("Sea of Treats",      function() tp(Vector3.new(-11000,10,3800))
 Teleport:Button("Kitsune Island",     function() tp(Vector3.new(-11564,10,4321))  end)
 Teleport:Button("Prehistoric Island", function() tp(Vector3.new(5983,5,-8000))    end)
 
--- ╔══════════════════════════════════════════════════════════════╗
--- ║                     TAB 6 — ESP                             ║
--- ╚══════════════════════════════════════════════════════════════╝
-local ESP = Window:Tab("👁️ ESP")
-
-ESP:Separator("— ESP Visual —")
+-- TAB ESP
+local ESP = Window:Tab("ESP")
+ESP:Separator("--- ESP Visual ---")
 ESP:Toggle("Player ESP", false, function(v)
     _G.BOP.ESPPlayers=v
     if not v then removeAllESP(); return end
@@ -740,7 +681,6 @@ ESP:Toggle("Player ESP", false, function(v)
         removeAllESP()
     end)
 end)
-
 ESP:Toggle("Mob ESP", false, function(v)
     newThread("ESPMob", function()
         while v do
@@ -755,7 +695,6 @@ ESP:Toggle("Mob ESP", false, function(v)
         end
     end)
 end)
-
 ESP:Toggle("Fruit ESP", false, function(v)
     newThread("ESPFr", function()
         while v do
@@ -770,7 +709,6 @@ ESP:Toggle("Fruit ESP", false, function(v)
         end
     end)
 end)
-
 ESP:Toggle("Chest ESP", false, function(v)
     newThread("ESPCh", function()
         while v do
@@ -785,7 +723,6 @@ ESP:Toggle("Chest ESP", false, function(v)
         end
     end)
 end)
-
 ESP:Toggle("Boss ESP", false, function(v)
     newThread("ESPBoss", function()
         while v do
@@ -800,18 +737,14 @@ ESP:Toggle("Boss ESP", false, function(v)
         end
     end)
 end)
-
-ESP:Button("🗑️ Limpiar todos los ESPs", function()
+ESP:Button("Limpiar todos los ESPs", function()
     removeAllESP()
-    Window:Notify("ESP","Todos los ESPs eliminados ✅")
+    Window:Notify("ESP","Todos los ESPs eliminados")
 end)
 
--- ╔══════════════════════════════════════════════════════════════╗
--- ║                   TAB 7 — PLAYER                            ║
--- ╚══════════════════════════════════════════════════════════════╝
-local PlayerTab = Window:Tab("⚡ Player")
-
-PlayerTab:Separator("— Movement —")
+-- TAB PLAYER
+local PlayerTab = Window:Tab("Player")
+PlayerTab:Separator("--- Movement ---")
 PlayerTab:Toggle("Speed Hack", false, function(v)
     _G.BOP.SpeedHack=v
     newThread("SpeedHack", function()
@@ -820,7 +753,6 @@ PlayerTab:Toggle("Speed Hack", false, function(v)
     end)
 end)
 PlayerTab:Slider("Walk Speed", 16, 500, 20, function(v) _G.BOP.SpeedValue=v end)
-
 PlayerTab:Toggle("Fly Hack", false, function(v)
     _G.BOP.FlyHack=v
     newThread("FlyHack", function()
@@ -835,7 +767,6 @@ PlayerTab:Toggle("Fly Hack", false, function(v)
         pcall(bg.Destroy,bg); pcall(bv.Destroy,bv)
     end)
 end)
-
 PlayerTab:Toggle("Infinite Jump", false, function(v)
     _G.BOP.InfiniteJump=v
     newThread("InfJump", function()
@@ -844,14 +775,12 @@ PlayerTab:Toggle("Infinite Jump", false, function(v)
         if c then c:Disconnect() end
     end)
 end)
-
-PlayerTab:Separator("— Misc —")
+PlayerTab:Separator("--- Misc ---")
 PlayerTab:Toggle("Anti AFK", false, function(v)
     newThread("AntiAFK", function()
         while v do VU:CaptureController(); VU:ClickButton2(Vector2.new(0,0),Workspace.CurrentCamera.CFrame); task.wait(60) end
     end)
 end)
-
 PlayerTab:Toggle("Full Bright", false, function(v)
     pcall(function()
         local L=game:GetService("Lighting")
@@ -859,8 +788,7 @@ PlayerTab:Toggle("Full Bright", false, function(v)
         L.GlobalShadows=not v; L.Ambient=v and Color3.new(1,1,1) or Color3.new(0,0,0)
     end)
 end)
-
-PlayerTab:Toggle("Anti-Lag (quitar partículas)", false, function(v)
+PlayerTab:Toggle("Anti-Lag (quitar particulas)", false, function(v)
     if v then
         pcall(function()
             for _,o in ipairs(Workspace:GetDescendants()) do
@@ -869,11 +797,10 @@ PlayerTab:Toggle("Anti-Lag (quitar partículas)", false, function(v)
                 end
             end
         end)
-        Window:Notify("Anti-Lag","Partículas eliminadas ✅")
+        Window:Notify("Anti-Lag","Particulas eliminadas")
     end
 end)
-
-PlayerTab:Separator("— Auto Stats —")
+PlayerTab:Separator("--- Auto Stats ---")
 PlayerTab:Toggle("Auto Stats (Melee)", false, function(v)
     newThread("StMelee", function() while v do pcall(function() local g=lp.PlayerGui:FindFirstChild("StatsGui",true); if g then local b=g:FindFirstChild("Melee",true); if b then b:FireServer("Melee") end end end); task.wait(3) end end)
 end)
@@ -884,11 +811,8 @@ PlayerTab:Toggle("Auto Stats (Sword)", false, function(v)
     newThread("StSword", function() while v do pcall(function() local g=lp.PlayerGui:FindFirstChild("StatsGui",true); if g then local b=g:FindFirstChild("Sword",true); if b then b:FireServer("Sword") end end end); task.wait(3) end end)
 end)
 
--- ╔══════════════════════════════════════════════════════════════╗
--- ║                   TAB 8 — EVENTS                            ║
--- ╚══════════════════════════════════════════════════════════════╝
-local Events = Window:Tab("🌊 Events")
-
+-- TAB EVENTS
+local Events = Window:Tab("Events")
 local function eventFarm(kws, coord, lbl)
     return function(v)
         newThread("Ev_"..lbl, function()
@@ -912,20 +836,16 @@ local function eventFarm(kws, coord, lbl)
         end)
     end
 end
-
-Events:Separator("— Volcano —")
+Events:Separator("--- Volcano ---")
 Events:Toggle("Auto Volcano Event", false, eventFarm({"Volcano","Lava"},Vector3.new(-1177,40,2046),"Volcano"))
-Events:Button("TP → Volcano", function() safeTP(CFrame.new(-1177,40,2046)) end)
-
-Events:Separator("— Prehistoric —")
+Events:Button("TP Volcano", function() safeTP(CFrame.new(-1177,40,2046)) end)
+Events:Separator("--- Prehistoric ---")
 Events:Toggle("Auto Prehistoric Event", false, eventFarm({"Prehistoric","Dino"},Vector3.new(5983,5,-8000),"Prehist"))
-Events:Button("TP → Prehistoric", function() safeTP(CFrame.new(5983,5,-8000)) end)
-
-Events:Separator("— Kitsune —")
+Events:Button("TP Prehistoric", function() safeTP(CFrame.new(5983,5,-8000)) end)
+Events:Separator("--- Kitsune ---")
 Events:Toggle("Auto Kitsune Event", false, eventFarm({"Kitsune","Fox"},Vector3.new(-11564,10,4321),"Kitsune"))
-Events:Button("TP → Kitsune", function() safeTP(CFrame.new(-11564,10,4321)) end)
-
-Events:Separator("— Sea Beast —")
+Events:Button("TP Kitsune", function() safeTP(CFrame.new(-11564,10,4321)) end)
+Events:Separator("--- Sea Beast ---")
 Events:Toggle("Auto Kill Sea Beast", false, function(v)
     newThread("AutoSB", function()
         while v do
@@ -940,8 +860,7 @@ Events:Toggle("Auto Kill Sea Beast", false, function(v)
         end
     end)
 end)
-
-Events:Separator("— Mirage Island —")
+Events:Separator("--- Mirage Island ---")
 Events:Toggle("Auto Farm Mirage Island", false, function(v)
     newThread("AutoMirage", function()
         while v do
@@ -962,12 +881,9 @@ Events:Toggle("Auto Farm Mirage Island", false, function(v)
     end)
 end)
 
--- ╔══════════════════════════════════════════════════════════════╗
--- ║                  TAB 9 — RACE V4                            ║
--- ╚══════════════════════════════════════════════════════════════╝
-local RaceV4 = Window:Tab("🧬 Race V4")
-
-RaceV4:Separator("— Human V4 —")
+-- TAB RACE V4
+local RaceV4 = Window:Tab("Race V4")
+RaceV4:Separator("--- Human V4 ---")
 RaceV4:Toggle("Auto Human Race V4", false, function(v)
     newThread("HumanV4", function()
         safeTP(CFrame.new(-4860,860,-1780)); task.wait(1.5); autoAcceptPrompt()
@@ -985,13 +901,12 @@ RaceV4:Toggle("Auto Human Race V4", false, function(v)
         safeTP(CFrame.new(-4820,870,-1600)); task.wait(1)
         local e=findByName({"Enel","GodEnel"}); if e then local eh=e:FindFirstChild("Humanoid"); if eh then eh.Health=0 end end
         task.wait(1); safeTP(CFrame.new(-4860,860,-1780)); autoAcceptPrompt()
-        Window:Notify("Race V4","✅ Human Race V4 completada!")
+        Window:Notify("Race V4","Human Race V4 completada!")
     end)
 end)
-RaceV4:Button("TP → Alchemist", function() safeTP(CFrame.new(-4860,860,-1780)) end)
-RaceV4:Button("TP → God Enel",  function() safeTP(CFrame.new(-4820,870,-1600)) end)
-
-RaceV4:Separator("— Shark V4 —")
+RaceV4:Button("TP Alchemist", function() safeTP(CFrame.new(-4860,860,-1780)) end)
+RaceV4:Button("TP God Enel",  function() safeTP(CFrame.new(-4820,870,-1600)) end)
+RaceV4:Separator("--- Shark V4 ---")
 RaceV4:Toggle("Auto Shark Race V4", false, function(v)
     newThread("SharkV4", function()
         local sk=0
@@ -1003,12 +918,11 @@ RaceV4:Toggle("Auto Shark Race V4", false, function(v)
             task.wait(1)
         end
         safeTP(CFrame.new(-11432,10,3970)); task.wait(1.5); autoAcceptPrompt()
-        Window:Notify("Race V4","✅ Shark Race V4 completada!")
+        Window:Notify("Race V4","Shark Race V4 completada!")
     end)
 end)
-RaceV4:Button("TP → Shark NPC", function() safeTP(CFrame.new(-11432,10,3970)) end)
-
-RaceV4:Separator("— Angel V4 —")
+RaceV4:Button("TP Shark NPC", function() safeTP(CFrame.new(-11432,10,3970)) end)
+RaceV4:Separator("--- Angel V4 ---")
 RaceV4:Toggle("Auto Angel Race V4", false, function(v)
     newThread("AngelV4", function()
         safeTP(CFrame.new(-4980,620,-530)); task.wait(1)
@@ -1021,12 +935,11 @@ RaceV4:Toggle("Auto Angel Race V4", false, function(v)
             task.wait(2)
         end
         safeTP(CFrame.new(-4980,620,-530)); autoAcceptPrompt()
-        Window:Notify("Race V4","✅ Angel Race V4 completada!")
+        Window:Notify("Race V4","Angel Race V4 completada!")
     end)
 end)
-RaceV4:Button("TP → Heaven", function() safeTP(CFrame.new(-4980,620,-530)) end)
-
-RaceV4:Separator("— Cyborg V4 —")
+RaceV4:Button("TP Heaven", function() safeTP(CFrame.new(-4980,620,-530)) end)
+RaceV4:Separator("--- Cyborg V4 ---")
 RaceV4:Toggle("Auto Cyborg Race V4", false, function(v)
     newThread("CyborgV4", function()
         safeTP(CFrame.new(-1600,140,240)); task.wait(1)
@@ -1039,27 +952,22 @@ RaceV4:Toggle("Auto Cyborg Race V4", false, function(v)
             task.wait(2)
         end
         safeTP(CFrame.new(430,184,1296)); task.wait(1.5); autoAcceptPrompt()
-        Window:Notify("Race V4","✅ Cyborg Race V4 completada!")
+        Window:Notify("Race V4","Cyborg Race V4 completada!")
     end)
 end)
-RaceV4:Button("TP → Ice Admiral", function() safeTP(CFrame.new(-1600,140,240)) end)
-RaceV4:Button("TP → Cyborg NPC",  function() safeTP(CFrame.new(430,184,1296))  end)
+RaceV4:Button("TP Ice Admiral", function() safeTP(CFrame.new(-1600,140,240)) end)
+RaceV4:Button("TP Cyborg NPC",  function() safeTP(CFrame.new(430,184,1296))  end)
 
--- ╔══════════════════════════════════════════════════════════════╗
--- ║                TAB 10 — ANTI-CHEAT & CONFIG                 ║
--- ╚══════════════════════════════════════════════════════════════╝
-local Config = Window:Tab("⚙️ Config")
-
-Config:Separator("— Anti-Cheat —")
+-- TAB CONFIG
+local Config = Window:Tab("Config")
+Config:Separator("--- Anti-Cheat ---")
 Config:Toggle("Bypass Teleport (TweenTP)", true, function(v)
     _G.BOP.BypassTP=v
-    Window:Notify("Bypass TP", v and "TweenTP activo ✅" or "TP directo ⚠️")
+    Window:Notify("Bypass TP", v and "TweenTP activo" or "TP directo")
 end)
-
 Config:Toggle("Anti-Kick (Hook)", false, function(v)
-    if v then applyAntiKick(); Window:Notify("Anti-Kick","Hook aplicado ✅") end
+    if v then applyAntiKick(); Window:Notify("Anti-Kick","Hook aplicado") end
 end)
-
 Config:Toggle("Simular Movimiento Humano", false, function(v)
     newThread("HumanMov", function()
         while v do
@@ -1068,8 +976,7 @@ Config:Toggle("Simular Movimiento Humano", false, function(v)
         end
     end)
 end)
-
-Config:Separator("— RAM & Performance —")
+Config:Separator("--- RAM & Performance ---")
 Config:Toggle("Auto RAM Cleaner", true, function(v)
     newThread("RAMClean", function()
         while v do
@@ -1080,34 +987,28 @@ Config:Toggle("Auto RAM Cleaner", true, function(v)
                 for obj,hl in pairs(ESPBoxes) do
                     if not obj.Parent then pcall(function() hl:Destroy() end); ESPBoxes[obj]=nil end
                 end
-                Window:Notify("RAM Shield","🧹 RAM limpiada: "..ram.."MB")
+                Window:Notify("RAM Shield","RAM limpiada: "..ram.."MB")
             end
         end
     end)
 end)
-
-Config:Button("🧹 Limpiar RAM Ahora", function()
+Config:Button("Limpiar RAM Ahora", function()
     collectgarbage("collect")
-    Window:Notify("RAM","Limpiada: "..math.floor(gcinfo()/1024).."MB ✅")
+    Window:Notify("RAM","Limpiada: "..math.floor(gcinfo()/1024).."MB")
 end)
-
-Config:Separator("— Control —")
-Config:Button("⛔ KILL SWITCH (Desactiva TODO)", function()
+Config:Separator("--- Control ---")
+Config:Button("KILL SWITCH (Desactiva TODO)", function()
     for k,v in pairs(_G.BOP) do if type(v)=="boolean" then _G.BOP[k]=false end end
     for n in pairs(Threads) do killThread(n) end
     removeAllESP()
-    Window:Notify("Kill Switch","⛔ Todo desactivado")
+    Window:Notify("Kill Switch","Todo desactivado")
 end)
-
-Config:Button("🔄 Reload Character", function() lp:LoadCharacter() end)
-Config:Button("🔁 Rejoin Server", function()
+Config:Button("Reload Character", function() lp:LoadCharacter() end)
+Config:Button("Rejoin Server", function()
     game:GetService("TeleportService"):Teleport(game.PlaceId,lp)
 end)
+Config:Label("BOP HUB v9.0 | Delta Optimizado")
 
-Config:Label("Plataforma: "..(isMobile and "📱 MÓVIL" or "💻 PC"))
-Config:Label("BOP HUB v9.0 — BopLib UI Custom")
-
--- ══ AUTO RAM CLEANER ON ══
 newThread("RAMClean", function()
     while true do
         task.wait(8)
@@ -1119,8 +1020,3 @@ newThread("RAMClean", function()
         end
     end
 end)
-
-warn("╔════════════════════════════════════╗")
-warn("║  BOP HUB v9.0 — BopLib UI ✅       ║")
-warn("║  Morado/Negro | Delta | Móvil      ║")
-warn("╚════════════════════════════════════╝")
